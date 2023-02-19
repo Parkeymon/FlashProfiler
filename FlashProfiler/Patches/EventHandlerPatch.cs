@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Exiled.API.Features;
 using Exiled.Events;
+using Exiled.Events.EventArgs.Interfaces;
 using Exiled.Events.Extensions;
 using HarmonyLib;
 
@@ -12,10 +13,10 @@ namespace FlashProfiler.Patches
     [HarmonyPatch]
     internal static class EventHandlerPatch
     {
-        public static MethodInfo TargetMethod() => typeof(Event).GetMethods().First(x => x.IsGenericMethod).MakeGenericMethod(typeof(EventArgs));
-        
+        public static MethodInfo TargetMethod() => typeof(Event).GetMethods().First(x => x.IsGenericMethod).MakeGenericMethod(typeof(IExiledEvent));
+
         [HarmonyPrefix]
-        private static bool Prefix(Events.CustomEventHandler<EventArgs> ev, EventArgs arg)
+        private static bool Prefix(Events.CustomEventHandler<IExiledEvent> ev, IExiledEvent arg)
         {
             if (ev == null)
                 return false;
@@ -37,8 +38,8 @@ namespace FlashProfiler.Patches
                 }
                 catch (Exception ex)
                 {
-                    Event.LogException(ex, handler.Method.Name, handler.Method.ReflectedType?.FullName, eventName);
-                }
+                    Log.Warn($"{ex}, {handler.Method.Name}, {handler.Method.ReflectedType?.FullName}, {handler.Method.ReflectedType?.FullName}");
+                } 
             }
             
             return false;
@@ -71,7 +72,7 @@ namespace FlashProfiler.Patches
                 }
                 catch (Exception ex)
                 {
-                    Event.LogException(ex, handler.Method.Name, handler.Method.ReflectedType?.FullName, eventName);
+                    Log.Warn($"{ex}, {handler.Method.Name}, {handler.Method.ReflectedType?.FullName}, {handler.Method.ReflectedType?.FullName}");
                 }
             }
             

@@ -1,5 +1,6 @@
 ﻿using System;
 using Exiled.API.Features;
+using FlashProfiler.Patches;
 using HarmonyLib;
 
 namespace FlashProfiler
@@ -17,6 +18,7 @@ namespace FlashProfiler
         public override void OnEnabled()
         {
             _harmony = new Harmony($"com.jesusqc.flash");
+            Log.Debug($"Event Handler Method: {EventHandlerPatch.TargetMethod()}");
             _harmony.PatchAll();
             
             base.OnEnabled();
