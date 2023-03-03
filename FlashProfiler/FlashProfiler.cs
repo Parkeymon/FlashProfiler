@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Exiled.API.Features;
 using FlashProfiler.Patches;
 using HarmonyLib;
@@ -9,25 +10,29 @@ namespace FlashProfiler
     {
         public override string Name { get; } = "FlashProfiler";
         public override string Prefix { get; } = "flash_profiler";
-        public override string Author { get; } = "Jesus-QC";
+        public override string Author { get; } = "Jesus-QC / Parkeymon";
         public override Version Version { get; } = new Version(0, 0, 2);
-        public override Version RequiredExiledVersion { get; } = new Version(5,0,0);
+        public override Version RequiredExiledVersion { get; } = new Version(6,0,0);
 
-        private Harmony _harmony;
+        internal static Harmony Harmony;
 
         public override void OnEnabled()
         {
-            _harmony = new Harmony($"com.jesusqc.flash");
-            Log.Debug($"Event Handler Method: {EventHandlerPatch.TargetMethod()}");
-            _harmony.PatchAll();
+            Harmony = new Harmony($"com.jesusqc.flash");
+            
+            if (!Directory.Exists($"{Paths.Configs}/FlashProfiler"))
+            {
+                Log.Warn("Profiler logs folder does not exist! Creating...");
+                Directory.CreateDirectory($"{Paths.Configs}/FlashProfiler");
+            }
             
             base.OnEnabled();
         }
 
         public override void OnDisabled()
         {
-            _harmony.UnpatchAll(_harmony.Id);
-            _harmony = null;
+            Harmony.UnpatchAll(Harmony.Id);
+            Harmony = null;
             
             base.OnDisabled();
         }

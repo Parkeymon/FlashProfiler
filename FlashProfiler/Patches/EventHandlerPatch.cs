@@ -35,6 +35,7 @@ namespace FlashProfiler.Patches
                     handler.DynamicInvoke(arg);
                     watch.Stop();
                     Log.Debug($"{watch.Elapsed.TotalMilliseconds}ms {handler.Method.Name}::{handler.Method.ReflectedType?.FullName}");
+                    Logic.AddEvent(watch.Elapsed.TotalMilliseconds, handler.Method.Name, handler.Method.ReflectedType?.FullName);
                 }
                 catch (Exception ex)
                 {
@@ -68,7 +69,8 @@ namespace FlashProfiler.Patches
                     watch.Restart();
                     handler.DynamicInvoke();
                     watch.Stop();
-                    Log.Debug($"{watch.Elapsed.TotalMilliseconds}ms {handler.Method.Name}::{handler.Method.ReflectedType?.FullName}");
+                    Log.Debug($"{watch.Elapsed.TotalMilliseconds}ms {handler.Method.Name}::{handler.Method.ReflectedType?.FullName}, {handler.Method.ReflectedType?.Namespace}");
+                    Logic.AddEvent(watch.Elapsed.TotalMilliseconds, handler.Method.Name, handler.Method.ReflectedType?.FullName);
                 }
                 catch (Exception ex)
                 {
